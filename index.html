@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="https://cdn-icons-png.flaticon.com/512/10766/10766489.png">
+    <title>Monitoring Suhu dan Kelembaban</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* General styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #1b263b, #4e5d6c);
+            /* Warna biru donker dan abu-abu */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            justify-content: center;
+        }
+
+        h1 {
+            font-size: 36px;
+            color: #f0f0f0;
+            /* Warna abu-abu terang */
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            width: 100%;
+            padding: 0 20px;
+        }
+
+        .box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+            padding: 30px;
+            text-align: center;
+            width: 280px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .box:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        h2 {
+            color: #ffffff;
+            /* Warna putih */
+        }
+
+        .display {
+            font-size: 56px;
+            font-weight: 700;
+            margin: 20px 0;
+            color: #00acc1;
+            /* Warna biru muda */
+        }
+
+        .label {
+            font-size: 18px;
+            color: #ffffff;
+            /* Warna putih */
+            margin-top: 10px;
+        }
+
+        .link {
+            margin-top: 30px;
+            font-size: 18px;
+            text-align: center;
+        }
+
+        .link a {
+            color: #00acc1;
+            /* Warna biru muda */
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .link a:hover {
+            text-decoration: underline;
+        }
+
+        /* Responsive design */
+        @media (max-width: 600px) {
+            .container {
+                flex-direction: column;
+                gap: 20px;
+            }
+
+            h1 {
+                font-size: 28px;
+            }
+
+            .box {
+                width: 90%;
+                padding: 20px;
+            }
+
+            .display {
+                font-size: 48px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <h1>Monitoring Suhu dan Kelembaban</h1>
+    <div class="container">
+        <div class="box">
+            <h2>Suhu</h2>
+            <div class="display">
+                <span id="temperature">--</span>°C
+            </div>
+            <div class="label">Suhu</div>
+        </div>
+        <div class="box">
+            <h2>Kelembaban</h2>
+            <div class="display">
+                <span id="humidity">--</span>%
+            </div>
+            <div class="label">Kelembaban</div>
+        </div>
+    </div>
+
+    <div class="link">
+        <a href="table.html">Lihat Semua Data</a>
+    </div>
+
+    <script>
+        // JavaScript code to fetch data and update the display
+        function updateSensorData() {
+            // Fetch data from your API endpoint
+            fetch('https://xxffbxnsfkrfpvuctpde.supabase.co/rest/v1/tabeldht', {
+                headers: {
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4ZmZieG5zZmtyZnB2dWN0cGRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE0NzAwMjUsImV4cCI6MjA0NzA0NjAyNX0.FHm25lrfwumgNAbCtIK58u_rCvyUrHfOKTFkxFXdlao',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inh4ZmZieG5zZmtyZnB2dWN0cGRlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MzE0NzAwMjUsImV4cCI6MjA0NzA0NjAyNX0.FHm25lrfwumgNAbCtIK58u_rCvyUrHfOKTFkxFXdlao'
+                }
+            })
+                .then(response => response.json())
+                .then(data => {
+                    // Sort the data by 'id' in descending order
+                    data.sort((a, b) => b.id - a.id);
+
+                    // Extract the first entry after sorting by id
+                    const { suhu, kelembapan } = data[0];
+
+                    // Update the display with sorted data
+                    document.getElementById('temperature').textContent = suhu.toFixed(1);
+                    document.getElementById('humidity').textContent = kelembapan.toFixed(1);
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Set default values if there's an error
+                    document.getElementById('temperature').textContent = '--';
+                    document.getElementById('humidity').textContent = '--';
+                });
+        }
+
+        // Update sensor data every 3 seconds
+        setInterval(updateSensorData, 3000);
+    </script>
+</body>
+
+</html>
